@@ -1,0 +1,7 @@
+#+TITLE: org-pretty-jump
+
+org-pretty-jump is a simple Emacs that provides an ivy-based (we might support helm in the future) menu for easily navigating org-mode buffers.
+It provides API functions for creating actions based on the menu, as well as some predefined end-user commands.
+
+This package is highly unstable.
+If you still would like to use it, please read the elisp source carefully and make sure to only manually update the package.
