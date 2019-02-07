@@ -5,7 +5,7 @@
 ;; Author: Me
 ;; Keywords: org, ivy, navigation, jump, refile
 ;; Version: 0.0.1
-;; Package-Requires: ((emacs "26.1") (org "9.2"))
+;; Package-Requires: ((emacs "26.1") (org "9.2") (ivy "0.8.0"))
 
 ;; This program is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -25,11 +25,10 @@
 ;; Put a description of the package here
 
 ;;; Code:
-
-;; requires
+;;;; requires
 (require 'org)
+;;;; lib
 
-;; code goes here
 (defun opj/lib-get-candidates (&optional style components handle-files)
   (let (candidates)
     (org-map-entries
@@ -44,7 +43,7 @@
          (push
           (cons 
            (concat
-            (if (member 'level components)
+            (if (member 'number components)
                 (concat (format "%d" level) " ")
               "")
             (if (member 'indent components)
@@ -56,6 +55,13 @@
            (point-marker))
           candidates))))
     (nreverse candidates)))
+
+(defun opj/lib-get-olp-from-pos (pos)
+  (save-excursion
+    (goto-char pos)
+    (org-get-outline-path t)))
+
+;;;; api
 
 ;;;###autoload
 (defun opj/get-heading-pos (&optional long-style components handle-files)
@@ -70,7 +76,20 @@
             :action (lambda (x) (apply action `(,(cdr x)))))
   nil)
 
+;;;; contrib
+
+;;;###autoload
+(defun opj/contrib-jump (&optional hide-others)
+  (interactive)
+  (opj/act-on-heading (lambda (pos)
+                     (if hide-others (org-cycle '(4)))
+                     (goto-char pos)
+                     (org-reveal t))
+                   t '(number) nil))
+
+;;;; provide
 (provide 'org-pretty-jump)
+
 ;;; test.el ends here
 
 ;; Local Variables:
