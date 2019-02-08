@@ -82,10 +82,11 @@
 (defun opj/contrib-jump (&optional hide-others)
   (interactive)
   (opj/act-on-heading (lambda (pos)
-                     (if hide-others (org-cycle '(4)))
-                     (goto-char pos)
-                     (org-reveal t))
-                   t '(number) nil))
+                        (if hide-others (org-cycle '(4)))
+                        (goto-char pos)
+                        (org-reveal t)
+                        (org-cycle '(2)))
+                      t '(number) nil))
 
 ;;;; provide
 (provide 'org-pretty-jump)
