@@ -29,7 +29,7 @@
 (require 'org)
 ;;;; lib
 
-(defun opj/lib-get-candidates (&optional style components handle-files)
+(defun opj-lib/get-candidates (&optional style components handle-files)
   (let (candidates)
     (org-map-entries
      (lambda ()
@@ -56,36 +56,51 @@
           candidates))))
     (nreverse candidates)))
 
-(defun opj/lib-get-olp-from-pos (pos)
+(defun opj-lib/get-olp-from-pos (pos)
   (save-excursion
     (goto-char pos)
     (org-get-outline-path t)))
+
+(defun opj-lib/show-from-top ()
+  (interactive)
+  (save-excursion
+    (ignore-errors
+      (org-back-to-heading t))
+    (org-show-entry)
+	(org-show-children)
+    (ignore-errors
+      (while t
+        (outline-up-heading 1 t)
+        (org-show-entry)
+        (org-show-children))))
+  (org-show-subtree))
 
 ;;;; api
 
 ;;;###autoload
 (defun opj/get-heading-pos (&optional long-style components handle-files)
-  (let ((cands (opj/lib-get-candidates long-style components handle-files)))
+  (let ((cands (opj-lib/get-candidates long-style components handle-files)))
     (cdr (assoc (ivy-read "Heading: "
                           cands)
                 cands))))
 ;;;###autoload
 (defun opj/act-on-heading (action &optional long-style components handle-files)
   (ivy-read "Heading: "
-            (opj/lib-get-candidates long-style components handle-files)
+            (opj-lib/get-candidates long-style components handle-files)
             :action (lambda (x) (apply action `(,(cdr x)))))
   nil)
 
 ;;;; contrib
 
 ;;;###autoload
-(defun opj/contrib-jump (&optional hide-others)
+(defun opj-contrib/jump (&optional hide-others)
   (interactive)
   (opj/act-on-heading (lambda (pos)
                         (if hide-others (org-cycle '(4)))
                         (goto-char pos)
-                        (org-reveal t)
-                        (org-cycle '(2)))
+                        (org-reveal)
+                        ;; (opj-lib/show-from-top)
+                        (if hide-others (org-show-siblings)))
                       t '(number) nil))
 
 ;;;; provide
@@ -93,7 +108,7 @@
 
 ;;; test.el ends here
 
-;; Local Variables:
+;; Not Local Variables:
 ;; nameless-current-name: "opj"
 ;; nameless-separator: "/"
 ;; End:
